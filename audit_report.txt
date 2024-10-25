@@ -1,0 +1,214 @@
+'solc --version' running
+'solc contract.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/Users/dhruvmore/Downloads/final cysro' running
+
+
+ **********ERRORS********** 
+
+PEPE20.sendETHToFee(uint256) (contract.sol#305-307) sends eth to arbitrary user
+	Dangerous calls:
+	- _taxWallet.transfer(amount) (contract.sol#306)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#functions-that-send-ether-to-arbitrary-destinations
+
+
+ **********ERRORS********** 
+
+Reentrancy in PEPE20._transfer(address,address,uint256) (contract.sol#234-278):
+	External calls:
+	- swapTokensForEth(min(amount,min(contractTokenBalance,_maxTaxSwap))) (contract.sol#261)
+		- uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(tokenAmount,0,path,address(this),block.timestamp) (contract.sol#290-296)
+	External calls sending eth:
+	- sendETHToFee(address(this).balance) (contract.sol#264)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	State variables written after the call(s):
+	- _balances[address(this)] = _balances[address(this)].add(taxAmount) (contract.sol#272)
+	PEPE20._balances (contract.sol#139) can be used in cross function reentrancies:
+	- PEPE20._transfer(address,address,uint256) (contract.sol#234-278)
+	- PEPE20.balanceOf(address) (contract.sol#203-205)
+	- PEPE20.constructor() (contract.sol#177-185)
+	- _balances[from] = _balances[from].sub(amount) (contract.sol#275)
+	PEPE20._balances (contract.sol#139) can be used in cross function reentrancies:
+	- PEPE20._transfer(address,address,uint256) (contract.sol#234-278)
+	- PEPE20.balanceOf(address) (contract.sol#203-205)
+	- PEPE20.constructor() (contract.sol#177-185)
+	- _balances[to] = _balances[to].add(amount.sub(taxAmount)) (contract.sol#276)
+	PEPE20._balances (contract.sol#139) can be used in cross function reentrancies:
+	- PEPE20._transfer(address,address,uint256) (contract.sol#234-278)
+	- PEPE20.balanceOf(address) (contract.sol#203-205)
+	- PEPE20.constructor() (contract.sol#177-185)
+	- lastSellBlock = block.number (contract.sol#267)
+	PEPE20.lastSellBlock (contract.sol#168) can be used in cross function reentrancies:
+	- PEPE20._transfer(address,address,uint256) (contract.sol#234-278)
+	- sellCount ++ (contract.sol#266)
+	PEPE20.sellCount (contract.sol#167) can be used in cross function reentrancies:
+	- PEPE20._transfer(address,address,uint256) (contract.sol#234-278)
+Reentrancy in PEPE20.addLiquidityEth() (contract.sol#309-331):
+	External calls:
+	- uniswapV2Pair = uniswapV2Factory.createPair(address(this),uniswapV2Router.WETH()) (contract.sol#315-318)
+	- uniswapV2Router.addLiquidityETH{value: msg.value}(address(this),totalSupply(),0,0,owner(),block.timestamp) (contract.sol#321-328)
+	External calls sending eth:
+	- uniswapV2Router.addLiquidityETH{value: msg.value}(address(this),totalSupply(),0,0,owner(),block.timestamp) (contract.sol#321-328)
+	State variables written after the call(s):
+	- tradingOpen = true (contract.sol#329)
+	PEPE20.tradingOpen (contract.sol#164) can be used in cross function reentrancies:
+	- PEPE20.addLiquidityEth() (contract.sol#309-331)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities
+
+
+ **********ERRORS********** 
+
+PEPE20.addLiquidityEth() (contract.sol#309-331) ignores return value by uniswapV2Router.addLiquidityETH{value: msg.value}(address(this),totalSupply(),0,0,owner(),block.timestamp) (contract.sol#321-328)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+
+ **********ERRORS********** 
+
+PEPE20.allowance(address,address).owner (contract.sol#212) shadows:
+	- Ownable.owner() (contract.sol#97-99) (function)
+PEPE20._approve(address,address,uint256).owner (contract.sol#227) shadows:
+	- Ownable.owner() (contract.sol#97-99) (function)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
+
+
+ **********ERRORS********** 
+
+Reentrancy in PEPE20.addLiquidityEth() (contract.sol#309-331):
+	External calls:
+	- uniswapV2Pair = uniswapV2Factory.createPair(address(this),uniswapV2Router.WETH()) (contract.sol#315-318)
+	State variables written after the call(s):
+	- _approve(address(this),address(uniswapV2Router),totalSupply()) (contract.sol#320)
+		- _allowances[owner][spender] = amount (contract.sol#230)
+	- _isExcludedFromFee[address(uniswapV2Pair)] = true (contract.sol#319)
+Reentrancy in PEPE20.addLiquidityEth() (contract.sol#309-331):
+	External calls:
+	- uniswapV2Pair = uniswapV2Factory.createPair(address(this),uniswapV2Router.WETH()) (contract.sol#315-318)
+	- uniswapV2Router.addLiquidityETH{value: msg.value}(address(this),totalSupply(),0,0,owner(),block.timestamp) (contract.sol#321-328)
+	External calls sending eth:
+	- uniswapV2Router.addLiquidityETH{value: msg.value}(address(this),totalSupply(),0,0,owner(),block.timestamp) (contract.sol#321-328)
+	State variables written after the call(s):
+	- swapEnabled = true (contract.sol#330)
+Reentrancy in PEPE20.transferFrom(address,address,uint256) (contract.sol#221-225):
+	External calls:
+	- _transfer(sender,recipient,amount) (contract.sol#222)
+		- uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(tokenAmount,0,path,address(this),block.timestamp) (contract.sol#290-296)
+	External calls sending eth:
+	- _transfer(sender,recipient,amount) (contract.sol#222)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	State variables written after the call(s):
+	- _approve(sender,_msgSender(),_allowances[sender][_msgSender()].sub(amount,ERC20: transfer amount exceeds allowance)) (contract.sol#223)
+		- _allowances[owner][spender] = amount (contract.sol#230)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+
+ **********ERRORS********** 
+
+Reentrancy in PEPE20._transfer(address,address,uint256) (contract.sol#234-278):
+	External calls:
+	- swapTokensForEth(min(amount,min(contractTokenBalance,_maxTaxSwap))) (contract.sol#261)
+		- uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(tokenAmount,0,path,address(this),block.timestamp) (contract.sol#290-296)
+	External calls sending eth:
+	- sendETHToFee(address(this).balance) (contract.sol#264)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	Event emitted after the call(s):
+	- Transfer(from,address(this),taxAmount) (contract.sol#273)
+	- Transfer(from,to,amount.sub(taxAmount)) (contract.sol#277)
+Reentrancy in PEPE20.addLiquidityEth() (contract.sol#309-331):
+	External calls:
+	- uniswapV2Pair = uniswapV2Factory.createPair(address(this),uniswapV2Router.WETH()) (contract.sol#315-318)
+	Event emitted after the call(s):
+	- Approval(owner,spender,amount) (contract.sol#231)
+		- _approve(address(this),address(uniswapV2Router),totalSupply()) (contract.sol#320)
+Reentrancy in PEPE20.transferFrom(address,address,uint256) (contract.sol#221-225):
+	External calls:
+	- _transfer(sender,recipient,amount) (contract.sol#222)
+		- uniswapV2Router.swapExactTokensForETHSupportingFeeOnTransferTokens(tokenAmount,0,path,address(this),block.timestamp) (contract.sol#290-296)
+	External calls sending eth:
+	- _transfer(sender,recipient,amount) (contract.sol#222)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	Event emitted after the call(s):
+	- Approval(owner,spender,amount) (contract.sol#231)
+		- _approve(sender,_msgSender(),_allowances[sender][_msgSender()].sub(amount,ERC20: transfer amount exceeds allowance)) (contract.sol#223)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+
+ **********ERRORS********** 
+
+PEPE20._transfer(address,address,uint256) (contract.sol#234-278) has a high cyclomatic complexity (12).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+
+
+ **********ERRORS********** 
+
+Function IUniswapV2Router02.WETH() (contract.sol#64) is not in mixedCase
+Constant PEPE20._decimals (contract.sol#153) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant PEPE20._tTotal (contract.sol#154) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant PEPE20._name (contract.sol#155) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant PEPE20._symbol (contract.sol#156) is not in UPPER_CASE_WITH_UNDERSCORES
+Variable PEPE20._maxTxAmount (contract.sol#157) is not in mixedCase
+Variable PEPE20._maxWalletSize (contract.sol#158) is not in mixedCase
+Variable PEPE20._taxSwapThreshold (contract.sol#159) is not in mixedCase
+Variable PEPE20._maxTaxSwap (contract.sol#160) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+
+
+ **********ERRORS********** 
+
+Reentrancy in PEPE20._transfer(address,address,uint256) (contract.sol#234-278):
+	External calls:
+	- sendETHToFee(address(this).balance) (contract.sol#264)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	State variables written after the call(s):
+	- _balances[address(this)] = _balances[address(this)].add(taxAmount) (contract.sol#272)
+	- _balances[from] = _balances[from].sub(amount) (contract.sol#275)
+	- _balances[to] = _balances[to].add(amount.sub(taxAmount)) (contract.sol#276)
+	- lastSellBlock = block.number (contract.sol#267)
+	- sellCount ++ (contract.sol#266)
+	Event emitted after the call(s):
+	- Transfer(from,address(this),taxAmount) (contract.sol#273)
+	- Transfer(from,to,amount.sub(taxAmount)) (contract.sol#277)
+Reentrancy in PEPE20.transferFrom(address,address,uint256) (contract.sol#221-225):
+	External calls:
+	- _transfer(sender,recipient,amount) (contract.sol#222)
+		- _taxWallet.transfer(amount) (contract.sol#306)
+	State variables written after the call(s):
+	- _approve(sender,_msgSender(),_allowances[sender][_msgSender()].sub(amount,ERC20: transfer amount exceeds allowance)) (contract.sol#223)
+		- _allowances[owner][spender] = amount (contract.sol#230)
+	Event emitted after the call(s):
+	- Approval(owner,spender,amount) (contract.sol#231)
+		- _approve(sender,_msgSender(),_allowances[sender][_msgSender()].sub(amount,ERC20: transfer amount exceeds allowance)) (contract.sol#223)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+
+
+ **********ERRORS********** 
+
+PEPE20.slitherConstructorVariables() (contract.sol#137-352) uses literals with too many digits:
+	- _maxTxAmount = 6300000 * 10 ** _decimals (contract.sol#157)
+PEPE20.slitherConstructorVariables() (contract.sol#137-352) uses literals with too many digits:
+	- _maxWalletSize = 6300000 * 10 ** _decimals (contract.sol#158)
+PEPE20.slitherConstructorVariables() (contract.sol#137-352) uses literals with too many digits:
+	- _taxSwapThreshold = 1000000 * 10 ** _decimals (contract.sol#159)
+PEPE20.slitherConstructorVariables() (contract.sol#137-352) uses literals with too many digits:
+	- _maxTaxSwap = 1000000 * 10 ** _decimals (contract.sol#160)
+PEPE20.slitherConstructorConstantVariables() (contract.sol#137-352) uses literals with too many digits:
+	- _tTotal = 420000000 * 10 ** _decimals (contract.sol#154)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
+
+
+ **********ERRORS********** 
+
+PEPE20._finalBuyTax (contract.sol#146) should be constant 
+PEPE20._finalSellTax (contract.sol#147) should be constant 
+PEPE20._initialBuyTax (contract.sol#144) should be constant 
+PEPE20._initialSellTax (contract.sol#145) should be constant 
+PEPE20._maxTaxSwap (contract.sol#160) should be constant 
+PEPE20._preventSwapBefore (contract.sol#150) should be constant 
+PEPE20._reduceBuyTaxAt (contract.sol#148) should be constant 
+PEPE20._reduceSellTaxAt (contract.sol#149) should be constant 
+PEPE20._taxSwapThreshold (contract.sol#159) should be constant 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+
+
+ **********ERRORS********** 
+
+PEPE20._taxWallet (contract.sol#142) should be immutable 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+INFO:Slither:contract.sol analyzed (7 contracts with 93 detectors), 39 result(s) found

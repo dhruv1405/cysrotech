@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Enter Smart Contract Details</title>
+   <link rel="stylesheet" href="../static/css/slither.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+   <div class="container">
+      <h1>Smart Contract Details</h1>
+      <form id="contractForm" onsubmit="submitContractDetails(event)">
+         <label for="contractAddress">Smart Contract Address:</label>
+         <input type="text" id="contractAddress" name="contractAddress" placeholder="0x..." required>
+
+         <label for="languageVersion">Language Version:</label>
+         <input type="text" id="languageVersion" name="languageVersion" placeholder="e.g., 0.8.0..." required>
+
+         <button type="submit">Submit</button>
+      </form>
+   </div>
+
+   <script>
+      function submitContractDetails(event) {
+         event.preventDefault();
+
+         // Get the values from the form
+         const contractAddress = document.getElementById('contractAddress').value;
+         const languageVersion = document.getElementById('languageVersion').value;
+
+         // Send the data to the Flask backend using fetch
+         fetch('/submit_contract', {
+            method: 'POST', // Set the HTTP method to POST
+            headers: {
+               'Content-Type': 'application/json' // Send the data as JSON
+            },
+            body: JSON.stringify({
+               contractAddress: contractAddress,
+               languageVersion: languageVersion
+            })
+         })
+         .then(response => response.json()) // Convert response to JSON
+         .then(data => {
+            console.log('Success:', data); // Log success message from Flask
+            alert('Contract details submitted successfully!');
+         })
+         .catch((error) => {
+            console.error('Error:', error); // Log any errors
+            alert('An error occurred while submitting the contract details.');
+         });
+      }
+   </script>
+</body>
+</html>
